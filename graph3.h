@@ -3,19 +3,18 @@ class Node{
 private:
     int val;
     mutable int inDegree;
-    mutable std::unordered_set<const Node*> neighbors;
+    mutable std::unordered_map<const Node*,int> neighbors;
 public:
     Node(const int num){
         val=num;
-        inDegree=0;
     }
 
     int getVal()const{
         return val;
     }
-    void addNeighbor(const Node* n)const{
+    void addNeighbor(const Node* n, int edgeWeight)const{
         if(n->getVal()!=val){
-           neighbors.insert(n);
+           neighbors[n]=edgeWeight;
         }
     }
     void removeNeighbor(const Node* n)const{
@@ -25,15 +24,15 @@ public:
         }
     }
 
-    bool operator==(const Node*n2){
-        if(val==n2->getVal()){
+    bool operator==(const Node&n2)const{
+        if(val==n2.getVal()){
             return true;
         }
         else{
             return false;
         }
     }
-    std::unordered_set<const Node*> getNeighbors()const{
+    std::unordered_map<const Node*,int> getNeighbors()const{
         return neighbors;
     }
     int getInDegree()const{
@@ -48,6 +47,25 @@ public:
         return;
     }
 
+};
+struct NodeHash{
+    public:
+        size_t operator() (const Node& n) const{
+            int val=n.getVal();
+            return std::hash<int>()(val);
+        }
+};
+
+struct NodeHashEqual{
+    public:
+        bool operator() (const Node& first, const Node& second) const{
+            if(first.getVal()==second.getVal()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
 };
 
 class Graph{
